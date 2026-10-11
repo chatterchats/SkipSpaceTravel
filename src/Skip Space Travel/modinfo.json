@@ -1,8 +1,8 @@
 {
   "title": "Skip Space Travel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Chats",
-  "description": "Development setup for skipping repeated mission departure, hyperspace, and arrival cinematics. Travel skipping is not implemented yet.",
+  "description": "Skips the repeated mission departure, hyperspace intro, approach, and Den docking scenes using the game's own cinematic skip. Hyperspace lasts only as long as loading.",
   "launchers": [
     "steam"
   ]

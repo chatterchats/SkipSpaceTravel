@@ -25,10 +25,7 @@ def main() -> None:
 
     entry_point = SOURCE / "Scripts" / "main.lua"
     if not entry_point.is_file():
-        raise SystemExit(
-            "Cannot package: src/Skip Space Travel/Scripts/main.lua is missing. "
-            "This project currently contains repository setup only."
-        )
+        raise SystemExit("Cannot package: src/Skip Space Travel/Scripts/main.lua is missing.")
     declarations = re.findall(
         r'^local VERSION = "([^"]+)"$',
         entry_point.read_text(encoding="utf-8"),
@@ -41,7 +38,7 @@ def main() -> None:
         "enabled.txt", "modinfo.json", "zcom-mod.json", "README.md",
     )]
     files += sorted((SOURCE / "Scripts").glob("*.lua"))
-    files += sorted((SOURCE / "MXM").glob("*.lua"))
+    files.append(SOURCE / "MXM" / "settings.lua")  # not the player's values.lua
     entries = {
         f"{PACKAGE_ROOT}/{path.relative_to(SOURCE).as_posix()}": path
         for path in files

@@ -167,8 +167,7 @@ def main() -> None:
         MODINFO: JSON_VERSION_PATTERN,
         ZCOM_MOD: JSON_VERSION_PATTERN,
     }
-    # Folder setup has no Lua entry point or MXM settings yet. Once created,
-    # their declarations join the same strict version synchronization.
+    # main.lua and MXM settings declare the version too when present.
     for path, pattern in (
         (SETTINGS, SETTINGS_VERSION_PATTERN),
         (MAIN, MAIN_VERSION_PATTERN),

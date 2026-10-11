@@ -8,3 +8,6 @@ __pycache__/
 Thumbs.db
 *.swp
 *.tmp
+
+# Written by MXM while the mod is symlinked into the game
+/src/Skip Space Travel/MXM/values.lua

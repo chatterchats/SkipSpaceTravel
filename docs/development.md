@@ -1,82 +1,41 @@
 # Development notes
 
-## Current state
+Everything lives in `src/Skip Space Travel/Scripts/main.lua`. `MXM.lua` is the
+unmodified Mixamoo Mod Config Manager client; `MXM/settings.lua` declares the
+single `enabled` switch.
 
-Repository setup only. No runtime Lua entry point, installed mod, or gameplay
-verification exists. Asset and reflection evidence identify candidate hooks;
-they do not establish that any skip route is safe in the installed build.
+## How it works
 
-## Exact content scope
+- `SCENES` lists the exact LevelSequence object paths to skip: leaving the Den
+  or planet, the hyperspace intro, approaching the planet or Den, and docking
+  at the Den (with Den-undocked and Kafrene variants). Paths come from
+  `AI+/registry_assets.csv` in the parent workspace. Anything not listed,
+  including `_Lighting` tracks and boarding, is left alone.
+- Hooks on `SMstate_PlayChoreographedSequence_C` (`Sequence Play`,
+  `OnStateBegin`, `OnStateEnd`) see each sequence as it starts. The Blueprint
+  class may load late, so hooks are installed when `NotifyOnNewObject` sees it.
+- Listed scenes are skipped with `state:NativeStop()`, the same callback the
+  in-game skip button reaches (per the retained Blueprint bytecode).
+- The hyperspace loop (`EVT_MTH_Loop_Master_R2L`,
+  `EVT_HTM_HyperspaceInterior_Loop`) is not skipped: it covers loading, and
+  the game ends it on its own once the destination is ready (observed in-game).
+- Any other sequence under `LevelTransitions/` is logged as
+  `PLAY | not skipped` and `END`, so unknown travel scenes show up in the log.
 
-The registry at `AI+/registry_assets.csv` in the parent workspace contains:
+## Alternative worth knowing about
 
-| Phase | Retained identifiers |
-| --- | --- |
-| Outbound departure | `EVT_HTM_DepartDenUndocked_L2R`, `EVT_HTM_DepartKafrene_L2R` |
-| Outbound hyperspace | `EVT_HTM_HyperspaceInterior_Loop`, shared `CSM_HyperspaceLoop` |
-| Outbound approach | `EVT_HTM_HyperspaceToPlanet_CurveLeft`, `EVT_HTM_HyperspaceToPlanet_L2R`, `EVT_HTM_HyperspaceToPlanet_L2R_Low` |
-| Return departure | `EVT_MTH_DepartPlanet_L2R_Low`, `EVT_MTH_DepartPlanet_R2L`, `EVT_MTH_DepartPlanet_R2L_CurveFromRight` |
-| Return hyperspace | Shared `CSM_HyperspaceLoop`, `EVT_MTH_Loop_Master_R2L` |
-| Return approach | `EVT_MTH_HyperspaceToDenUndocked_R2L`, `EVT_MTH_HyperspaceToKafrene_R2L` |
+`UWorldOrchestrationSettings.bAutoSkipTransitionCinematicsWhenDestinationReady`
+(`Config=Game`, default false) is the game's own switch for this. It may skip
+more transition scenes than the ones listed above; untested.
 
-Registry lines 32761–32867 group these under
-`/Game/Game/Cinematics/Scenes/Shipping/GameEvents/Events/LevelTransitions/`.
-Identifiers guide investigation; runtime instance identity must be established
-before registering a targeted skip.
+## Testing
 
-## Candidate controls and constraints
+Restart the game after installing (UE4SS mod reload is not supported). UE4SS
+output should show `[SkipSpaceTravel] v… loaded` and one `Hooked` line per hook,
+then `SKIP | <scene>` for each skipped scene. Things to check on a round trip:
 
-Evidence is in the parent workspace's `ZeroCompany_RE_Reference_v2/reference/`:
-
-- `native_headers/current/BitReactorGame/Public/SeamlessLoadRequest.h`: a request
-  has `bPreventTransitionCinematics` and separate departure, transition, and
-  arrival payload references. The broad flag may affect more than the six
-  repeated exterior scenes; do not enable it indiscriminately.
-- `native_headers/current/BitReactorGame/Public/WorldOrchestrationSettings.h`:
-  `bAutoSkipTransitionCinematicsWhenDestinationReady`. Captured defaults in
-  `mappings/jmap/game_specific_cdo_values.jsonl` record this as false.
-- `native_headers/current/BitReactorGame/Public/BRWorldOrchestrationSubsystem.h`:
-  destination readiness, preload state, and seamless-load completion APIs.
-- `native_headers/current/BitReactorGame/Public/BRG_CinematicSubsystem.h`:
-  `ExecuteSkipCommand()` and `DoesActiveCinematicModeAllowSkipping()`.
-- `types/all_lua_types/BP_Stage.lua`: stage-specific `Skip Stage` interface,
-  payload identity, presentation completion, and cleanup declarations.
-- `types/all_lua_types/L_WorldOrchestration_v2.lua`: separate loading, travel
-  playback, arrival, and overlay-clearing states.
-
-Prefer a targeted existing skip/completion path, leaving the game's loading and
-state transitions in charge. Do not delete cinematics, force map loading, fake
-destination readiness, broadcast completion prematurely, or skip all scenes
-through a global cinematic hook. SDK declarations and generated Lua types are
-not executable proof of the shipped implementation.
-
-## Required runtime verification
-
-A working implementation must exercise a complete outbound/return round trip:
-all six repeated scenes skipped, actual destination loading completed, controls
-restored, and mission results/rewards preserved. Include Kafrene/undocked Den
-variants, multiple approach variants, successful missions, retreat/failure,
-and consecutive missions. Verify that unrelated story, conversation, boarding,
-and mission-specific arrival content remains unchanged. Check save/load and
-mod disable/reload lifecycle behavior before claiming compatibility.
-
-A source ZIP or metadata check does not establish any of those gameplay results.
-
-## Repository tooling verification
-
-Local smoke runs exercised the actual packaging and version commands:
-
-- Packaging the current project refuses the absent runtime entry point and
-  produces no archive.
-- Disposable fixtures produce a single-root mod ZIP with the MIT license and
-  matching checksum, excluding directory markers and logs.
-- Repackaging identical source preserves the archive; changed source cannot
-  overwrite a same-version archive.
-- Version bumps synchronize metadata/changelog before runtime files exist,
-  and synchronize main/MXM declarations once present. Mismatched declarations
-  abort without changing metadata or the changelog.
-- The Nexus changelog command produces category-prefixed plain-text entries.
-- Workflow YAML parses locally. The GitHub workflow has not been executed.
-
-The fixtures were removed. These checks prove repository tooling only, not
-travel skipping or game compatibility.
+- every travel scene logs `SKIP`, for both Den variants and several approach
+  variants; check `PLAY | not skipped` lines for anything missed;
+- hyperspace lasts only as long as loading;
+- controls come back, mission results and rewards are intact;
+- story scenes, conversations and boarding still play.
