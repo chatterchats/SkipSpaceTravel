@@ -39,3 +39,11 @@ then `SKIP | <scene>` for each skipped scene. Things to check on a round trip:
 - hyperspace lasts only as long as loading;
 - controls come back, mission results and rewards are intact;
 - story scenes, conversations and boarding still play.
+
+## Tested in-game (0.2.0)
+
+- Round trips from the undocked Den and Kafrene: every listed scene skipped;
+  docking variants seen were `HangarArrival_C03_Nebula` and `HangarArrival_C030`.
+- The MXM switch applies immediately both ways, including mid-mission.
+- A failed mission ends on the restart/load screen, so there is no return trip.
+- Extraction ends the mission as a win and uses the same return trip.
