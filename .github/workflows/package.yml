@@ -1,0 +1,34 @@
+name: Package mod
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mod-package
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Package source and upload artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Package mod
+        run: python3 scripts/package.py
+
+      - name: Upload package and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: Skip-Space-Travel
+          path: |
+            dist/*.zip
+            dist/*.zip.sha256
+          if-no-files-found: error
+          compression-level: 0

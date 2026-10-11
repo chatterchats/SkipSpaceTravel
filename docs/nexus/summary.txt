@@ -1,0 +1,1 @@
+DRAFT — not released. Planned UE4SS mod to skip repeated ship departure, hyperspace, and approach cinematics before and after missions, without bypassing actual loading or unrelated story scenes.

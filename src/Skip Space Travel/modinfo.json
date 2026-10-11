@@ -1,0 +1,9 @@
+{
+  "title": "Skip Space Travel",
+  "version": "0.1.0",
+  "author": "Chats",
+  "description": "Development setup for skipping repeated mission departure, hyperspace, and arrival cinematics. Travel skipping is not implemented yet.",
+  "launchers": [
+    "steam"
+  ]
+}

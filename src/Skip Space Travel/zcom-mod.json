@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "community.skip-space-travel",
+  "name": "Skip Space Travel",
+  "version": "0.1.0",
+  "author": "Chats",
+  "description": "Development setup for skipping repeated mission departure, hyperspace, and arrival cinematics. Travel skipping is not implemented yet.",
+  "game": {
+    "appId": 2075800,
+    "testedBuilds": []
+  },
+  "type": [
+    "ue4ss"
+  ],
+  "requires": {
+    "ue4ss": true
+  }
+}
