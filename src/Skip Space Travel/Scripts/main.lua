@@ -1,10 +1,10 @@
--- Skip Space Travel v0.2.0
+-- Skip Space Travel v1.0.0
 -- Skips the repeated ship-travel cinematics: leaving the Den, the hyperspace
 -- intro, and approaching the planet before a mission; leaving the planet, the
 -- hyperspace intro, approaching the Den, and docking after it. The hyperspace
 -- loop itself is left alone: it covers loading and the game ends it once the
 -- destination is ready.
-local VERSION = "0.2.0"
+local VERSION = "1.0.0"
 local Config = require("MXM")
 
 local ROOT = "/Game/Game/Cinematics/Scenes/Shipping/GameEvents/Events/LevelTransitions/"

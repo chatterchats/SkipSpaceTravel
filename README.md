@@ -1,73 +1,152 @@
 # Skip Space Travel
 
-[GitHub repository](https://github.com/chatterchats/SkipSpaceTravel)
+[![Nexus Mods](https://img.shields.io/badge/Nexus%20Mods-Skip%20Space%20Travel-d98f40)](https://www.nexusmods.com/starwarszerocompany/mods/335)
+[![UE4SS](https://img.shields.io/badge/framework-UE4SS-6f42c1)](https://github.com/UE4SS-RE/RE-UE4SS)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2f7d4f)](LICENSE)
 
-Development project for a UE4SS mod for **Star Wars: Zero Company** that skips
-the repeated ship-travel cinematics before and after missions.
+Skip Space Travel is a UE4SS Lua mod for **Star Wars: Zero Company** that skips
+the ship-travel cutscenes before and after every mission. Hyperspace lasts only
+as long as the game needs to load; story scenes and everything else still play.
 
-**Status:** working. Outbound/return round trips tested in-game from both the
-undocked Den and Kafrene. Not yet published.
+## What gets skipped
 
-## Scope
+| Trip | Skipped | Still plays |
+| --- | --- | --- |
+| Heading out | Leaving the Den, hyperspace intro, approaching the planet | Hyperspace loop, until the mission has loaded |
+| Coming back | Leaving the planet, hyperspace intro, approaching the Den, docking | Hyperspace loop, until the Den has loaded |
 
-- Outbound: leaving the Den, the hyperspace intro, and approaching the planet.
-- Return: leaving the planet, the hyperspace intro, approaching the Den, and
-  docking.
-- Include the docked Kafrene and undocked Den variants.
-- Preserve destination loading, mission results, rewards, and input restoration.
-- Leave unrelated story scenes, conversations, and mission-specific cinematics alone.
-- Actual loading time remains; the hyperspace loop plays until loading is done.
+Both the undocked Den and Kafrene versions are covered. Failed missions end
+on the restart/load screen with no trip home; extraction ends a mission as a
+win and uses the normal trip home.
 
-## Layout
+## Configuration
 
-- `src/Skip Space Travel/` — installable mod tree and mod-manager metadata.
-- `src/Skip Space Travel/Scripts/` — runtime Lua source directory.
-- `src/Skip Space Travel/MXM/` — optional MXM settings directory.
-- `scripts/` — packaging, version synchronization, and Nexus changelog utilities.
-- `docs/development.md` — how the runtime works and what to check in-game.
-- `docs/nexus/` — explicitly marked draft listing text, not a published listing.
-- `.github/workflows/package.yml` — manually triggered package/artifact workflow.
-- `Zero_Company_UE4SS_Lua_Guide.md` — the shared UE4SS development reference.
+One setting, **Skip Space Travel**, on by default. With
+[Mixamoo Mod Config Manager (MXM)](https://www.nexusmods.com/starwarszerocompany/mods/149)
+installed, open **MOD SETTINGS** from the main menu or press `F2`. The switch
+applies immediately, including mid-mission. Without MXM the mod is always on.
 
-## Development commands
+## Requirements
 
-Run from this directory:
+- **Star Wars: Zero Company**
+- **UE4SS** for Zero Company, with the delayed game-thread action API
+- Optional: [Mixamoo Mod Config Manager](https://www.nexusmods.com/starwarszerocompany/mods/149)
+  for the on/off switch
 
-```sh
-python3 scripts/bump_version.py patch
-python3 scripts/nexus_changelog.py 0.1.1
-python3 scripts/package.py
+| Game build | Status |
+| --- | --- |
+| 24874058 | Tested |
+
+Later builds may work but are unverified until tested.
+
+## Installation
+
+Download the release ZIP from
+[Nexus Mods](https://www.nexusmods.com/starwarszerocompany/mods/335), not GitHub's source-code archive (unless you package
+`src/Skip Space Travel` yourself). The ZIP keeps `Skip Space Travel` as its
+top-level folder and includes metadata for both mod managers below.
+
+### With a mod manager
+
+- **[Zero Mod Manager](https://github.com/stellamarislabs/zero-mod-manager)**
+  (formerly ZCOM Mod Manager): open **Install**, drop in the ZIP, then
+  confirm Skip Space Travel is enabled under **Mods**.
+- **[Zero Company Mod Command](https://github.com/EnvianMods/ZeroCompanyModCommand)**:
+  drag the ZIP into the **Hangar Bay** and check that it's enabled.
+
+### By hand
+
+1. Install UE4SS for Star Wars: Zero Company.
+2. Extract the `Skip Space Travel` folder into
+   `SWZeroCompany/Binaries/Win64/ue4ss/Mods/`.
+3. Check that `ue4ss/Mods/Skip Space Travel/Scripts/main.lua` exists.
+4. If your UE4SS setup ignores the packaged `enabled.txt`, add
+   `Skip Space Travel : 1` to `ue4ss/Mods/mods.txt`.
+
+### Updating and uninstalling
+
+Close the game, then install the new ZIP the same way (by hand, copy it over
+the old folder). To uninstall, disable or remove it in your mod manager, or
+delete the `Skip Space Travel` folder.
+
+## Troubleshooting
+
+Everything goes to `UE4SS.log` with the `[SkipSpaceTravel]` prefix:
+
+- `v1.0.0 loaded | enabled` at startup, then `Hooked …` lines once the
+  cinematic Blueprint loads;
+- `SKIP | <scene> | <path>` for each skipped cutscene;
+- `PLAY | not skipped | <path>` and `END | <path>` for any other travel
+  cutscene, such as the hyperspace loop. A `PLAY` line for a cutscene you
+  expected to be skipped means it's missing from the list.
+
+### Reporting a bug
+
+Open an [issue](https://github.com/chatterchats/SkipSpaceTravel/issues) with
+your game build, UE4SS version, other installed mods, which cutscene still
+played or what went wrong, and `UE4SS.log`.
+
+## How it works
+
+The whole runtime is
+[`src/Skip Space Travel/Scripts/main.lua`](src/Skip%20Space%20Travel/Scripts/main.lua).
+It hooks the choreography state that plays cinematic sequences, matches the
+playing sequence against a list of exact asset paths, and calls the state's
+`NativeStop`, the same callback the in-game skip button reaches. The
+hyperspace loop isn't on the list: the game ends it on its own once the
+destination is ready. See [`docs/development.md`](docs/development.md) for
+details and test notes.
+
+## Repository layout
+
+```text
+.
+├── .github/workflows/package.yml         # manual package build
+├── .github/workflows/release-nexus.yml   # manual Nexus release
+├── CHANGELOG.md
+├── README.md
+├── docs/
+│   ├── development.md                    # how it works, test notes
+│   └── nexus/                            # mod page description and summary
+├── scripts/
+│   ├── bump_version.py                   # version bump + changelog promotion
+│   ├── nexus_changelog.py                # a release's notes as Nexus text
+│   └── package.py                        # build the release ZIP into dist/
+└── src/Skip Space Travel/                # the distributable mod folder
+    ├── MXM/settings.lua                  # MXM settings page
+    ├── Scripts/main.lua                  # the runtime
+    ├── Scripts/MXM.lua                   # unmodified MXM client library
+    ├── enabled.txt
+    ├── modinfo.json                      # Zero Company Mod Command
+    └── zcom-mod.json                     # Zero Mod Manager
 ```
 
-The version helper follows the other mods' `major`, `minor`, and `patch`
-interface. It promotes non-empty `[Unreleased]` changelog notes and synchronizes
-both metadata files, plus runtime and MXM version declarations when those files
-exist. It does not create missing Lua files.
+## Development
 
-Packaging reads **source**, never a live game installation. A real
-`Scripts/main.lua` declaring the matching `local VERSION` is required. The ZIP
-contains one `Skip Space Travel/` directory, its MIT license, metadata, readme,
-enablement marker, and Lua files. Directory markers and development files do
-not ship. Output goes to `dist/` with a SHA-256 checksum.
+1. Link or copy `src/Skip Space Travel` into the game's `ue4ss/Mods` folder.
+2. Restart the game after changes (the mod doesn't support UE4SS hot reload),
+   then fly a mission there and back and check `UE4SS.log`.
 
-The GitHub workflow packages only; it does not publish to Nexus. No Nexus mod
-ID or tested-build claim has been invented.
+## Releasing
 
-## Runtime and testing
+```sh
+python3 scripts/bump_version.py patch   # or minor / major
+python3 scripts/package.py
+python3 scripts/nexus_changelog.py 1.0.0
+```
 
-The whole runtime is `Scripts/main.lua`. It matches exact LevelSequence object
-paths and calls the choreography state's `NativeStop` (the in-game skip
-callback). The hyperspace loop is left for the game to end once loading is
-done. See
-`docs/development.md` for details.
+`bump_version.py` promotes the `[Unreleased]` changelog notes and syncs the
+version in `modinfo.json`, `zcom-mod.json`, `MXM/settings.lua` and
+`Scripts/main.lua`. `package.py` builds `dist/Skip Space Travel V<version>.zip`
+plus a SHA-256 checksum from source, and refuses to overwrite an existing
+version with different contents. `nexus_changelog.py` prints a release's notes
+as plain text for the Nexus changelog.
 
-The optional Mixamoo Mod Config Manager switch defaults to enabled and applies
-to subsequent scenes.
-
-Install by extracting the ZIP's `Skip Space Travel/` folder into the game's
-`SWZeroCompany/Binaries/Win64/ue4ss/Mods/` and restarting the game. UE4SS output
-should then contain `[SkipSpaceTravel] v… loaded`. If it doesn't, check that the
-path is `Mods/Skip Space Travel/Scripts/main.lua` and that `enabled.txt` exists.
+After the first upload, later releases can go through the **Release to Nexus
+Mods** workflow (run it manually from the Actions tab). It checks that the
+versions match, builds the ZIP with `package.py`, and replaces the single
+active file on the Nexus page with the release notes as its changelog. It needs
+a `NEXUSMODS_API_KEY` repository secret.
 
 ## License
 

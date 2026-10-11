@@ -1,16 +1,86 @@
-[b]Skip Space Travel — development draft[/b]
+[b]Skip Space Travel[/b] cuts the ship-travel cutscenes that play before and after every mission.
+You go from the Den straight into hyperspace, and hyperspace lasts only as long as the game needs to load. Story scenes, conversations and everything else still play as normal.
 
-Tested in-game on outbound/return round trips from both the undocked Den and
-Kafrene. Not yet published as a Nexus listing.
-
-[b]What it does[/b]
+[heading]What gets skipped[/heading]
+[b]Heading out on a mission[/b]
 [list]
-[*]Skip leaving the Den, the hyperspace intro, and approaching the planet before missions.
-[*]Skip leaving the planet, the hyperspace intro, approaching the Den, and docking after missions.
-[*]Preserve mission loading, results, rewards, and input restoration.
-[*]Leave unrelated story scenes and conversations unchanged.
+[*][b]Leaving the Den[/b], both the undocked Den and Kafrene versions[/*]
+[*][b]The hyperspace intro[/b][/*]
+[*][b]Approaching the planet[/b][/*]
+[/list]
+[b]Coming back[/b]
+[list]
+[*][b]Leaving the planet[/b][/*]
+[*][b]The hyperspace intro[/b][/*]
+[*][b]Approaching the Den[/b], both the undocked Den and Kafrene versions[/*]
+[*][b]Docking at the Den[/b][/*]
+[/list]
+[b]The hyperspace loop still plays while the game loads.[/b] It covers the loading screen, and the game ends it as soon as the destination is ready, so you'll only see it for a few seconds. Loading time itself can't be skipped.
+
+[heading]Using Skip Space Travel[/heading]
+Install it and play. It's on by default.
+To turn it off without uninstalling, install [url=https://www.nexusmods.com/starwarszerocompany/mods/149][b]MXM Config Manager[/b][/url] and open [b]MOD SETTINGS[/b] from the main menu (or press [b]F2[/b]). The switch takes effect immediately, even mid-mission.
+MXM Config Manager is optional. Without it, Skip Space Travel is always on.
+
+[heading]Requirements[/heading]
+[list]
+[*][b]Star Wars Zero Company[/b][/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/9]UE4SS for Star Wars Zero Company[/url][/*]
+[*][b]Optional:[/b] [url=https://www.nexusmods.com/starwarszerocompany/mods/149]MXM Config Manager[/url] for the on/off switch[/*]
+[/list]
+Skip Space Travel has been tested on game build [b]24874058[/b]. Other builds may work but should be treated as unverified.
+
+[heading]Installation[/heading]
+[b]Mod manager[/b]
+Skip Space Travel includes metadata for the community mod managers:
+[list]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/29]ZCOM Mod Manager[/url][/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/121]Zero Company Mod Command[/url][/*]
+[/list]
+Install the downloaded ZIP through either one and make sure Skip Space Travel is enabled.
+
+[b]Manual installation[/b]
+Make sure UE4SS is installed and working, close the game, then extract the [b]Skip Space Travel[/b] folder into:
+[code]SWZeroCompany/Binaries/Win64/ue4ss/Mods/[/code]
+The finished installation should contain:
+[code]ue4ss/Mods/Skip Space Travel/Scripts/main.lua[/code]
+The package includes [b]enabled.txt[/b]. If your UE4SS setup doesn't pick it up, add this line to [b]ue4ss/Mods/mods.txt[/b]:
+[code]Skip Space Travel : 1[/code]
+
+[heading]Compatibility[/heading]
+Skip Space Travel only targets the specific travel cutscenes listed above, by their exact asset paths. It skips them the same way the game's own skip button does, and leaves loading, mission results, rewards and the return to the Den to the game.
+Failed missions end on the restart/load screen and have no trip home, so nothing changes there. Extraction ends a mission as a win and uses the same trip home.
+Skip Space Travel should coexist with most unrelated UE4SS mods, including my other mods below.
+
+[heading]Troubleshooting[/heading]
+Skip Space Travel writes to [b]UE4SS.log[/b] with the [b][SkipSpaceTravel][/b] prefix. After starting the game you should see a [b]loaded[/b] line, and during travel a [b]SKIP[/b] line for each skipped cutscene. Any other travel cutscene it sees but doesn't skip is logged as [b]PLAY | not skipped[/b].
+When reporting a problem, please include:
+[list]
+[*]Your game build[/*]
+[*]Your UE4SS version[/*]
+[*]Your other installed mods[/*]
+[*]Which cutscene still played, or what went wrong[/*]
+[*][code]UE4SS.log[/code][/*]
 [/list]
 
-The hyperspace loop still plays while the destination loads; loading time itself cannot be removed.
+[heading]Why I Made This[/heading]
+The travel cutscenes look great the first few times, but they play around every single mission. Skip Space Travel gets you to the action, and back to the Den, without sitting through them again.
 
-By Chats. MIT License.
+[heading]Source Code and Issue Reports[/heading]
+Source, technical documentation and issue tracking are available on [url=https://github.com/chatterchats/SkipSpaceTravel]GitHub[/url]. You can also post in the Bugs tab here on Nexus.
+
+[heading]Check Out My Other Mods[/heading]
+[list]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/315]Off Duty[/url] — Adds fatigue and recovery: operators get tired on missions and recover while off duty.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/154]Fast Resonance[/url] — Speed up Resonance Transfer, Shared Suffering and Unnatural Resilience, with a separate toggle and speed setting for each.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/176]Character Share[/url] — Share custom characters and Astromechs using copy-and-paste codes in the Character Databank.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/209]Enhanced Databank[/url] — Sort your custom characters and Astromechs into folders you can create, rename and delete.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/314]Colors+[/url] — Choose colors beyond the preset swatches, with a live preview in the character creator, barracks and armory.[/*]
+[/list]
+
+[heading]Shout-outs[/heading]
+[list]
+[*][url=https://forums.nexusmods.com/profile/1661783-gugarion/]Gugarion[/url] and the [url=https://discord.gg/qpBkjjKSRp][b]ZCom Modding Discord[/b][/url] — for the testing, advice and help figuring out how this game works.[/*]
+[*]The [url=https://github.com/UE4SS-RE/RE-UE4SS][b]UE4SS-RE team[/b][/url] — for the tools Skip Space Travel is built on.[/*]
+[*][url=https://www.nexusmods.com/profile/Vercadi]Vercadi[/url] — for maintaining the [url=https://www.nexusmods.com/starwarszerocompany/mods/9]UE4SS build for Star Wars Zero Company[/url].[/*]
+[/list]

@@ -2,9 +2,23 @@
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 with [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-Version 0.1.0 was the repository setup.
+Versions before 1.0.0 were unreleased development builds.
 
 ## [Unreleased]
+
+## [1.0.0]
+
+### Added
+
+- First public release on Nexus Mods.
+- Skips the ship-travel cutscenes around every mission: leaving the Den or
+  planet, the hyperspace intro, approaching the planet or Den, and docking at
+  the Den, for both the undocked Den and Kafrene.
+- The hyperspace loop still plays while the game loads and ends as soon as the
+  destination is ready.
+- Optional on/off switch through Mixamoo Mod Config Manager, applied
+  immediately.
+- Tested on game build 24874058.
 
 ## [0.2.0]
 

@@ -2,15 +2,16 @@
 
 By Chats. MIT License.
 
-Skips only the repeated Den/planet departure, hyperspace intro, approach, and
-Den docking sequences. The hyperspace loop still plays until loading is done.
-Unlisted story, boarding, and gameplay-handoff scenes remain untouched.
-Actual loading time cannot be removed.
+Skips the ship-travel cutscenes before and after every mission: leaving the
+Den or planet, the hyperspace intro, approaching the planet or Den, and docking
+at the Den. The hyperspace loop still plays while the game loads, and ends as
+soon as the destination is ready. Everything else plays as normal.
 
-Install this folder into `SWZeroCompany/Binaries/Win64/ue4ss/Mods/`.
-Requires UE4SS with delayed game-thread actions. The optional Mixamoo Mod
-Config Manager switch defaults to enabled. Diagnostics go to UE4SS output.
-Restart the game rather than using Reload All Mods.
+Install this folder into `SWZeroCompany/Binaries/Win64/ue4ss/Mods/`. Requires
+UE4SS for Star Wars: Zero Company. Optional: Mixamoo Mod Config Manager adds an
+on/off switch under MOD SETTINGS (F2); it's on by default.
 
-Repository: https://github.com/chatterchats/SkipSpaceTravel
-See `docs/development.md` in the repository for evidence and required live checks.
+Log lines go to `UE4SS.log` with the `[SkipSpaceTravel]` prefix.
+
+Nexus Mods: https://www.nexusmods.com/starwarszerocompany/mods/335
+Source and issues: https://github.com/chatterchats/SkipSpaceTravel

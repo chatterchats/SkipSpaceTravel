@@ -1,1 +1,1 @@
-DRAFT — not released. UE4SS mod that skips the repeated ship departure, hyperspace intro, approach, and Den docking cinematics before and after missions; hyperspace lasts only as long as loading.
+Skips the ship-travel cutscenes before and after every mission: leaving the Den or planet, the hyperspace intro, the approach and docking. Hyperspace lasts only as long as loading takes.
