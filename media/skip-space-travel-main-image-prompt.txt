@@ -1,0 +1,17 @@
+Generated using the built-in image_gen tool.
+
+Final export: proportionally resized and center-cropped to exactly 1920x1080
+pixels. No stretching. Saved as skip-space-travel-main-image.png.
+
+Use case: ads-marketing.
+Asset type: polished 1920x1080 Nexus Mods main image / thumbnail for the Star Wars: Zero Company mod Skip Space Travel.
+Primary request: create the matching 16:9 main-image version of the supplied Skip Space Travel banner, following exactly the established thumbnail setup of the supplied Enhanced Databank main image.
+Input images: Image 1 is the Skip Space Travel banner, the primary DESIGN REFERENCE for the correct title, skip-forward icon, typography, cyan palette and HUD linework. Image 2 is the Enhanced Databank main image, the COMPOSITION REFERENCE for translating this same banner series into 1920x1080. Create a new matching asset; do not include either reference as an inset or mockup.
+Output framing: exactly 1920x1080 pixels, landscape 16:9, full-bleed finished artwork with no letterboxing or external margins.
+Scene/backdrop: near-black deep navy, subtly cloudy blue texture. Match the symmetrical fine cyan HUD framing with angular side borders, restrained side ticks, faint large concentric radar circles and a delicate central crosshair from the references.
+Subject: the exact cyan skip-forward symbol from Image 1: two right-facing triangular chevrons followed by a vertical bar, with luminous cyan bevels and subtle metallic depth. Center it prominently in the upper-middle region, enclosed by the radar arc, at approximately x=960 y=350. Use an icon height of roughly 230 pixels, balanced with the title below.
+Text (verbatim): "SKIP SPACE TRAVEL". Exactly these three words, in a single straight horizontal line centered below the icon at approximately y=620. No other text.
+Typography: match Image 1's tall bold condensed uppercase sans-serif, cool silver-white vertical metallic gradient, crisp edges and understated depth. Title should span roughly 75 percent of the image width with generous side margins and be highly legible as a small thumbnail. Match Image 2's title-panel positioning and visual hierarchy.
+Composition: use the larger 16:9 canvas naturally. Bring the cyan side rails inward around the upper icon and lower title panel, retain the elegant symmetrical negative space above and below, and use faint radar circles to fill the canvas. Keep all icon and title content fully inside the safe area. Do not stretch the wide banner into a taller format.
+Color palette: midnight navy, black, cool silver-white, luminous cyan only.
+Constraints: visually consistent with the existing Skip Space Travel banner and Enhanced Databank thumbnail series. Clean polished sci-fi graphic design, symmetrical and restrained. Accurate text and clean icon. No subtitle, tagline, Nexus logo, Star Wars logo, badges, watermark, rainbow colors, character art, spaceship scene, extra words, or promotional mockup.

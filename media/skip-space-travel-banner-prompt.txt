@@ -1,0 +1,16 @@
+Generated using the built-in image_gen tool.
+
+Final export: proportionally resized to 1300 pixels wide, then center-cropped
+to exactly 1300x372 pixels. No stretching. Saved as skip-space-travel-banner.png.
+
+Use case: ads-marketing.
+Asset type: Nexus Mods banner for the Star Wars: Zero Company mod Skip Space Travel.
+Primary request: generate a finished banner that matches the established series design of the two supplied reference banners, specifically the monochromatic cyan Enhanced Databank banner.
+Input images: Image 1 (Enhanced Databank banner) is the principal STYLE AND LAYOUT REFERENCE; Image 2 (Colors+ banner) is a secondary STYLE AND LAYOUT REFERENCE. Neither is an edit target. Create a new banner, keeping their established background and HUD framing design closely matched.
+Output: exactly 1300x372 pixels, very wide landscape, aspect ratio 3.494623656:1. The entire finished artwork must fill the wide banner with no letterboxing, white surround, mockup, or margins outside the design.
+Scene/backdrop: near-black deep navy space-like background with subtle cloudy blue texture; restrained cyan technical linework, faint concentric radar rings centered in the frame, fine central crosshair, symmetrical angular HUD borders coming inward from all four corners, short side ticks, and a thin horizontal title panel matching the references.
+Subject: above the title, centered at about x=650 y=90, a crisp small cyan skip-forward symbol made of two right-facing triangular chevrons ending at a vertical bar, subtly dimensional with the same soft cyan glow and restrained metallic polish as the database icon. Enclose it in the same faint radar arc arrangement; fit the icon into the existing upper-center region. This icon communicates skipping the recurring ship-travel cinematics.
+Text (verbatim): "SKIP SPACE TRAVEL". Exactly these three words in one single horizontal line, centered across the middle title panel. No other text.
+Typography: use the same tall bold condensed uppercase sans-serif, cool silver-white vertical metallic gradient, crisp clean edges, understated texture and subtle dark depth as the ENHANCED DATABANK reference. Fit the title comfortably across the center with generous side margins; keep its baseline, height, and panel alignment closely matched to the references.
+Color palette: midnight navy, black, cool silver-white, luminous cyan only.
+Constraints: match the references' sleek symmetrical sci-fi mod-banner system. Preserve the cyan framing, central alignment and generous negative space. Make all letters accurate, crisp, and legible at 1300x372. No subtitle, tagline, Star Wars logo, Nexus logo, badges, watermark, extra words, rainbow colors, character art, spaceship scene, or promotional mockup.
