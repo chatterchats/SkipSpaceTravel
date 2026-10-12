@@ -75,7 +75,7 @@ delete the `Skip Space Travel` folder.
 
 Everything goes to `UE4SS.log` with the `[SkipSpaceTravel]` prefix:
 
-- `v1.0.0 loaded | enabled` at startup, then `Hooked …` lines once the
+- `v1.0.1 loaded | enabled` at startup, then `Hooked …` lines once the
   cinematic Blueprint loads;
 - `SKIP | <scene> | <path>` for each skipped cutscene;
 - `PLAY | not skipped | <path>` and `END | <path>` for any other travel
@@ -138,7 +138,7 @@ details and test notes.
 ```sh
 python3 scripts/bump_version.py patch   # or minor / major
 python3 scripts/package.py
-python3 scripts/nexus_changelog.py 1.0.0
+python3 scripts/nexus_changelog.py 1.0.1
 ```
 
 `bump_version.py` promotes the `[Unreleased]` changelog notes and syncs the

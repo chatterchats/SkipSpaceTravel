@@ -1,6 +1,6 @@
 {
   "title": "Skip Space Travel",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Chats",
   "description": "Skips the repeated mission departure, hyperspace intro, and approach scenes using the game's own cinematic skip. Hyperspace lasts only as long as loading.",
   "launchers": [

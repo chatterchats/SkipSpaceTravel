@@ -1,7 +1,7 @@
 return {
     id = "SkipSpaceTravel",
     name = "Skip Space Travel",
-    version = "1.0.0",
+    version = "1.0.1",
     description = "Skip repeated mission space-travel scenes without bypassing loading.",
     settings = {
         {key = "enabled", type = "bool", name = "Skip Space Travel", default = true,

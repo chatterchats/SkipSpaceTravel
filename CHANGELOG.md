@@ -6,6 +6,8 @@ Versions before 1.0.0 were unreleased development builds.
 
 ## [Unreleased]
 
+## [1.0.1]
+
 ### Changed
 
 - The Den docking scene plays again. Without it, the Den could fail to load
