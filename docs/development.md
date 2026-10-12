@@ -7,8 +7,8 @@ single `enabled` switch.
 ## How it works
 
 - `SCENES` lists the exact LevelSequence object paths to skip: leaving the Den
-  or planet, the hyperspace intro, approaching the planet or Den, and docking
-  at the Den (with Den-undocked and Kafrene variants). Paths come from
+  or planet, the hyperspace intro, and approaching the planet or Den (with
+  Den-undocked and Kafrene variants). Docking isn't skipped (below). Paths come from
   `AI+/registry_assets.csv` in the parent workspace. Anything not listed,
   including `_Lighting` tracks and boarding, is left alone.
 - Hooks on `SMstate_PlayChoreographedSequence_C` (`Sequence Play`,
@@ -21,6 +21,32 @@ single `enabled` switch.
   the game ends it on its own once the destination is ready (observed in-game).
 - Any other sequence under `LevelTransitions/` is logged as
   `PLAY | not skipped` and `END`, so unknown travel scenes show up in the log.
+- Every other choreographed sequence is logged as `PLAY | scene` and `END`,
+  and listed scenes that play because the switch is off as
+  `PLAY | switched off`. Logging doesn't depend on the switch, so a run with it
+  off records what a skip would have cut.
+
+## Why docking plays (2026-10-12)
+
+1.0.0 skipped docking (`Mission_to_HUB/HangarArrival/*`). Returning from
+MM_05_030 ("Unfinished Business", end of chapter 5) then left the Den black
+behind the HUD; menus and the station map still worked, and a save and reload
+recovered. The scene logging showed the game starts a story scene,
+`StoryContent/CIN_5700_TheLift/CIN_5700_TheLift_A`, the moment docking ends.
+Runs on Instance 2, each a return from that mission:
+
+| Return scenes | Den |
+| --- | --- |
+| all played normally (switch off) | fine |
+| all skipped (1.0.0) | black |
+| docking played at 20×, others skipped | black |
+| all four played at 20× (every event runs) | black |
+| docking played normally, others at 20× | fine |
+
+So it isn't anything docking's tracks do but the time it takes: the Den needs
+roughly docking's 9 s after the hyperspace loop ends before that scene starts.
+Approaching the Den (5.6 s) wasn't needed. How long is enough probably depends
+on the machine, so docking isn't shortened at all.
 
 ## Alternative worth knowing about
 

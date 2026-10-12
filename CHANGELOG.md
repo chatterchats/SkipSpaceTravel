@@ -6,6 +6,16 @@ Versions before 1.0.0 were unreleased development builds.
 
 ## [Unreleased]
 
+### Changed
+
+- The Den docking scene plays again. Without it, the Den could fail to load
+  after certain story missions: the screen stayed black behind the menus until
+  the game was saved and reloaded. Returning from a mission takes about 9
+  seconds longer.
+- Every cutscene is now logged to `UE4SS.log`, including travel scenes that
+  play because the switch is off, so a bug report shows what played around a
+  skip.
+
 ## [1.0.0]
 
 ### Added

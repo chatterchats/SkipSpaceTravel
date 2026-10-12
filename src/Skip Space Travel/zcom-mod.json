@@ -4,7 +4,7 @@
   "name": "Skip Space Travel",
   "version": "1.0.0",
   "author": "Chats",
-  "description": "Skips the repeated mission departure, hyperspace intro, approach, and Den docking scenes using the game's own cinematic skip. Hyperspace lasts only as long as loading.",
+  "description": "Skips the repeated mission departure, hyperspace intro, and approach scenes using the game's own cinematic skip. Hyperspace lasts only as long as loading.",
   "game": {
     "appId": 2075800,
     "testedBuilds": [

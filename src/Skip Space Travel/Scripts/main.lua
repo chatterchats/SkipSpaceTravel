@@ -1,9 +1,11 @@
 -- Skip Space Travel v1.0.0
 -- Skips the repeated ship-travel cinematics: leaving the Den, the hyperspace
 -- intro, and approaching the planet before a mission; leaving the planet, the
--- hyperspace intro, approaching the Den, and docking after it. The hyperspace
--- loop itself is left alone: it covers loading and the game ends it once the
--- destination is ready.
+-- hyperspace intro, and approaching the Den after it. The hyperspace loop and
+-- docking are left alone: the loop covers loading and the game ends it once the
+-- destination is ready, and docking gives the Den time to finish loading. Every
+-- other choreographed scene is logged, with the switch on or off, so a report
+-- shows what played around a skip.
 local VERSION = "1.0.0"
 local Config = require("MXM")
 
@@ -37,11 +39,11 @@ add("leave planet", "Mission_to_HUB/DepartPlanet", {
 add("approach Den", "Mission_to_HUB/ExitHyperspace", {
     "EVT_MTH_HyperspaceToDenUndocked_R2L", "EVT_MTH_HyperspaceToKafrene_R2L",
 })
-add("dock at Den", "Mission_to_HUB/HangarArrival", {
-    "EVT_MTH_HangarArrival_A010", "EVT_MTH_HangarArrival_C030",
-    "EVT_MTH_HangarArrival_C030_Settle", "EVT_MTH_HangarArrival_C030_Loop",
-    "EVT_MTH_HangarArrival_C030_Settle_and_Loop", "EVT_MTH_HangarArrival_C03_Nebula",
-})
+-- Docking (Mission_to_HUB/HangarArrival) isn't skipped. After Unfinished
+-- Business the game starts a story scene (CIN_5700_TheLift_A) when docking
+-- ends; skipping docking, or playing it at 20x, started that scene before the
+-- Den had finished loading, and the Den stayed black behind the HUD. With
+-- docking's 9 s played normally the Den was fine.
 
 local enabled = Config.Get("enabled", true) == true
 local pending = {} -- choreography state full name -> record
@@ -95,7 +97,7 @@ end
 local ATTEMPTS = {0, 100, 250, 500, 1000}
 
 local function observe(state)
-    local key = enabled and full_name(state)
+    local key = full_name(state)
     if not key then return end
     local record = {key = key, state = state}
     pending[key] = record -- replaces any earlier record, retiring its attempts
@@ -105,12 +107,18 @@ local function observe(state)
                 or not valid(state) then return end
             local path = object_path(state:GetPlayingLevelSequence())
             record.scene, record.path = path and SCENES[path], path
-            if record.scene then
+            if record.scene and enabled then
                 skip(record)
-            elseif path and path:sub(1, #ROOT) == ROOT then
-                -- Unlisted travel scene: log start and end to see what plays.
+            elseif path then
+                -- Log start and end of everything else to see what plays.
                 record.watched = true
-                log("PLAY | not skipped | %s", path)
+                if record.scene then
+                    log("PLAY | switched off | %s | %s", record.scene, path)
+                elseif path:sub(1, #ROOT) == ROOT then
+                    log("PLAY | not skipped | %s", path)
+                else
+                    log("PLAY | scene | %s", path)
+                end
             elseif i == #ATTEMPTS then
                 pending[key] = nil
             end
@@ -152,7 +160,6 @@ end)
 
 Config.OnChange(function()
     enabled = Config.Get("enabled", true) == true
-    if not enabled then pending = {} end
     log("%s", enabled and "Enabled" or "Disabled")
 end)
 

@@ -1,1 +1,1 @@
-Skips the ship-travel cutscenes before and after every mission: leaving the Den or planet, the hyperspace intro, the approach and docking. Hyperspace lasts only as long as loading takes.
+Skips the ship-travel cutscenes before and after every mission: leaving the Den or planet, the hyperspace intro and the approach. Hyperspace lasts only as long as loading takes.

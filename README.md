@@ -13,9 +13,11 @@ as long as the game needs to load; story scenes and everything else still play.
 | Trip | Skipped | Still plays |
 | --- | --- | --- |
 | Heading out | Leaving the Den, hyperspace intro, approaching the planet | Hyperspace loop, until the mission has loaded |
-| Coming back | Leaving the planet, hyperspace intro, approaching the Den, docking | Hyperspace loop, until the Den has loaded |
+| Coming back | Leaving the planet, hyperspace intro, approaching the Den | Hyperspace loop, until the Den has loaded; docking at the Den |
 
-Both the undocked Den and Kafrene versions are covered. Failed missions end
+Both the undocked Den and Kafrene versions are covered. Docking plays because
+the Den needs that time to finish loading: without it, the Den could stay black
+after certain story missions. Failed missions end
 on the restart/load screen with no trip home; extraction ends a mission as a
 win and uses the normal trip home.
 
@@ -77,8 +79,12 @@ Everything goes to `UE4SS.log` with the `[SkipSpaceTravel]` prefix:
   cinematic Blueprint loads;
 - `SKIP | <scene> | <path>` for each skipped cutscene;
 - `PLAY | not skipped | <path>` and `END | <path>` for any other travel
-  cutscene, such as the hyperspace loop. A `PLAY` line for a cutscene you
-  expected to be skipped means it's missing from the list.
+  cutscene, such as the hyperspace loop and docking. A `PLAY` line for a
+  cutscene you expected to be skipped means it's missing from the list;
+- `PLAY | scene | <path>` and `END` for every other cutscene, such as story
+  scenes, and `PLAY | switched off | …` for a travel cutscene that played
+  because the switch is off. These show what played around a skip, so include
+  them in reports.
 
 ### Reporting a bug
 
@@ -94,7 +100,7 @@ It hooks the choreography state that plays cinematic sequences, matches the
 playing sequence against a list of exact asset paths, and calls the state's
 `NativeStop`, the same callback the in-game skip button reaches. The
 hyperspace loop isn't on the list: the game ends it on its own once the
-destination is ready. See [`docs/development.md`](docs/development.md) for
+destination is ready. Neither is docking (see the changelog). See [`docs/development.md`](docs/development.md) for
 details and test notes.
 
 ## Repository layout
