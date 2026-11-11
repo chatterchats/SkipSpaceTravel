@@ -37,7 +37,8 @@ applies immediately, including mid-mission. Without MXM the mod is always on.
 
 | Game build | Status |
 | --- | --- |
-| 24874058 | Tested |
+| [26445778](https://steamdb.info/app/2075800/patchnotes/) | Tested |
+| 25898267 | Tested |
 
 Later builds may work but are unverified until tested.
 
