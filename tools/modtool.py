@@ -337,6 +337,11 @@ def run_tests(root: Path = ROOT, names: list[str] | None = None) -> None:
     tests = sorted((root / "tests").glob("*_test.lua")) + sorted((root / "tests").glob("*_test.py"))
     if names:
         tests = [t for t in tests if t.stem in names or t.name in names]
+    if os.environ.get("SKIP_LUA_TESTS") == "1":
+        skipped = [t for t in tests if t.suffix == ".lua"]
+        if skipped:
+            print(f"warning: SKIP_LUA_TESTS=1, skipping {len(skipped)} Lua tests")
+            tests = [t for t in tests if t.suffix != ".lua"]
     if not tests:
         print("no tests found (tests/*_test.lua, tests/*_test.py)")
         return
