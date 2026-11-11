@@ -6,6 +6,8 @@ Versions before 1.0.0 were unreleased development builds.
 
 ## [Unreleased]
 
+## [1.0.2]
+
 ### Changed
 
 - Mark game builds 25898267 and 26445778 as tested in the mod manager
