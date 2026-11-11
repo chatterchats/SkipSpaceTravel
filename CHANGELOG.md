@@ -6,6 +6,11 @@ Versions before 1.0.0 were unreleased development builds.
 
 ## [Unreleased]
 
+### Changed
+
+- The release ZIP is now named `SkipSpaceTravel-<version>.zip`; its contents and the
+  `Skip Space Travel` folder inside are unchanged. Releases are also published on GitHub.
+
 ## [1.0.2]
 
 ### Changed

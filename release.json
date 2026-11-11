@@ -1,0 +1,10 @@
+{
+  "name": "SkipSpaceTravel",
+  "title": "Skip Space Travel",
+  "version": "1.0.2",
+  "nexusModId": 335,
+  "zipLayout": "folder",
+  "shipped": [
+    {"folder": "Skip Space Travel", "kind": "ue4ss", "exclude": ["MXM/values.lua"]}
+  ]
+}
