@@ -32,11 +32,12 @@ KIND_DEST = {
     "ue4ss": "Binaries/Win64/ue4ss/Mods",
     "pak": "Content/Paks/~mods",
 }
+LUA_RUNTIMES = ("luajit", "5.4")
 ZIP_LAYOUTS = ("folder", "game")
 # Top level of a mod repo. Required items must exist; the rest are allowed.
 REQUIRED_FILES = ("Makefile", "README.md", "CHANGELOG.md", "CLAUDE.md", "release.json")
 REQUIRED_DIRS = ("src", "tests", "tools", "docs", "docs/nexus", ".github/workflows")
-OPTIONAL = {"LICENSE", "CREDITS.md", "dev", "unreal", "native", "dist",
+OPTIONAL = {"LICENSE", "CREDITS.md", "dev", "unreal", "native", "server", "dist",
             ".git", ".github", ".gitignore", ".gitattributes", ".claude"}
 FIXED_TIME = (1980, 1, 1, 0, 0, 0)  # zip timestamps, so a tag always rebuilds the same zip
 
@@ -61,6 +62,9 @@ def load_release(root: Path = ROOT) -> dict:
     if not SEMVER.fullmatch(data["version"]):
         raise Fail(f"release.json version must be X.Y.Z, got {data['version']!r}")
     data.setdefault("zipLayout", "folder")
+    data.setdefault("lua", "luajit")
+    if data["lua"] not in LUA_RUNTIMES:
+        raise Fail(f"release.json lua must be one of {sorted(LUA_RUNTIMES)}")
     if data["zipLayout"] not in ZIP_LAYOUTS:
         raise Fail(f"release.json zipLayout must be one of {ZIP_LAYOUTS}")
     if not data["shipped"]:
@@ -69,6 +73,11 @@ def load_release(root: Path = ROOT) -> dict:
         item.setdefault("kind", "ue4ss")
         item.setdefault("install", "link")
         item.setdefault("exclude", [])
+        item.setdefault("notices", item["kind"] == "ue4ss")
+        item.setdefault("include", [])
+        for extra in item["include"]:
+            if not isinstance(extra, dict) or set(extra) != {"path", "sha256"}:
+                raise Fail(f"shipped folder {item['folder']!r}: each include needs exactly 'path' and 'sha256'")
         if item["kind"] not in KIND_DEST:
             raise Fail(f"shipped folder {item.get('folder')!r}: kind must be one of {sorted(KIND_DEST)}")
         if item["install"] not in ("link", "copy"):
@@ -78,40 +87,49 @@ def load_release(root: Path = ROOT) -> dict:
 
 # ---------------------------------------------------------------- version spots
 
-def version_spots(release: dict, root: Path = ROOT) -> list[tuple[Path, re.Pattern]]:
-    """Every place the version is written, each pattern with one capture group."""
+def formatted(version: str, fmt: str) -> str:
+    """A version as a spot stores it: "plain" X.Y.Z, or "packed" major*10000+minor*100+patch."""
+    if fmt == "packed":
+        major, minor, patch = map(int, SEMVER.fullmatch(version).groups())
+        return str(major * 10000 + minor * 100 + patch)
+    return version
+
+
+def version_spots(release: dict, root: Path = ROOT) -> list[tuple[Path, re.Pattern, str]]:
+    """Every place the version is written: (file, pattern with one capture group, format)."""
     spots = []
     for item in release["shipped"]:
         folder = root / "src" / item["folder"]
         for name in ("modinfo.json", "zcom-mod.json"):
             if (folder / name).is_file():
-                spots.append((folder / name, re.compile(r'"version"\s*:\s*"([^"]*)"')))
+                spots.append((folder / name, re.compile(r'"version"\s*:\s*"([^"]*)"'), "plain"))
         main = folder / "Scripts" / "main.lua"
         if main.is_file():
-            spots.append((main, re.compile(r'^local VERSION\s*=\s*"([^"]*)"', re.M)))
+            spots.append((main, re.compile(r'^local VERSION\s*=\s*"([^"]*)"', re.M), "plain"))
         settings = folder / "MXM" / "settings.lua"
         if settings.is_file() and re.search(r'^\s*version\s*=\s*"', settings.read_text(encoding="utf-8"), re.M):
-            spots.append((settings, re.compile(r'^\s*version\s*=\s*"([^"]*)"', re.M)))
+            spots.append((settings, re.compile(r'^\s*version\s*=\s*"([^"]*)"', re.M), "plain"))
     for extra in release.get("versionSpots", []):
-        spots.append((root / extra["file"], re.compile(extra["pattern"], re.M)))
+        spots.append((root / extra["file"], re.compile(extra["pattern"], re.M), extra.get("format", "plain")))
     return spots
 
 
-def read_versions(release: dict, root: Path = ROOT) -> list[tuple[Path, str]]:
+def read_versions(release: dict, root: Path = ROOT) -> list[tuple[Path, str, str]]:
     found = []
-    for path, pattern in version_spots(release, root):
+    for path, pattern, fmt in version_spots(release, root):
         if not path.is_file():
             raise Fail(f"version spot {path.relative_to(root)} does not exist")
         matches = pattern.findall(path.read_text(encoding="utf-8"))
         if len(matches) != 1:
             raise Fail(f"{path.relative_to(root)}: expected one version, found {len(matches)}")
-        found.append((path, matches[0]))
+        found.append((path, matches[0], fmt))
     return found
 
 
 def version_problems(release: dict, root: Path = ROOT) -> list[str]:
     return [f"{path.relative_to(root)} says {found}, release.json says {release['version']}"
-            for path, found in read_versions(release, root) if found != release["version"]]
+            for path, found, fmt in read_versions(release, root)
+            if found != formatted(release["version"], fmt)]
 
 
 # ---------------------------------------------------------------- changelog
@@ -215,7 +233,17 @@ def package_entries(release: dict, root: Path = ROOT) -> dict[str, Path]:
         folder = root / "src" / item["folder"]
         for path in shipped_files(item, root):
             entries[f"{prefix}/{path.relative_to(folder).as_posix()}"] = path
-        if item["kind"] == "ue4ss":  # copies keep the licence and credits
+        for extra in item["include"]:  # untracked files that ship, pinned by hash
+            path = folder / extra["path"]
+            name = f"src/{item['folder']}/{extra['path']}"
+            if not path.is_file():
+                raise Fail(f"{name} is missing: it isn't in git, so a package-extra step must fetch it")
+            if sha256(path) != extra["sha256"]:
+                raise Fail(f"{name} doesn't match its sha256 in release.json")
+            if f"{prefix}/{extra['path']}" in entries:
+                raise Fail(f"{name} is tracked by git; list it in include only when it isn't")
+            entries[f"{prefix}/{extra['path']}"] = path
+        if item["notices"]:  # copies keep the licence and credits
             for notice in notices:
                 entries.setdefault(f"{prefix}/{notice.name}", notice)
     return entries
@@ -333,6 +361,21 @@ def uninstall(root: Path = ROOT) -> None:
 
 # ---------------------------------------------------------------- tests
 
+def lua_command(release: dict) -> str:
+    """The interpreter for this repo's Lua tests: LuaJIT, or Lua 5.4 (the Lua inside UE4SS) for
+    repos whose code uses 5.4-only syntax such as integer division or bitwise operators."""
+    if release["lua"] == "luajit":
+        return "luajit"
+    for name in ("lua5.4", "lua"):
+        found = shutil.which(name)
+        if found:
+            probe = subprocess.run([found, "-e", "io.write(_VERSION)"], capture_output=True, text=True)
+            if probe.stdout == "Lua 5.4":
+                return found
+    raise Fail("these tests need Lua 5.4 (`lua5.4` or `lua` on PATH): "
+               "`sudo dnf install lua` or `sudo apt install lua5.4`")
+
+
 def run_tests(root: Path = ROOT, names: list[str] | None = None) -> None:
     tests = sorted((root / "tests").glob("*_test.lua")) + sorted((root / "tests").glob("*_test.py"))
     if names:
@@ -346,8 +389,9 @@ def run_tests(root: Path = ROOT, names: list[str] | None = None) -> None:
         print("no tests found (tests/*_test.lua, tests/*_test.py)")
         return
     failed = []
+    lua = lua_command(load_release(root)) if any(t.suffix == ".lua" for t in tests) else None
     for test in tests:
-        command = ["luajit" if test.suffix == ".lua" else sys.executable, str(test.relative_to(root))]
+        command = [lua if test.suffix == ".lua" else sys.executable, str(test.relative_to(root))]
         result = subprocess.run(command, cwd=root, capture_output=True, text=True)
         if result.returncode == 0:
             print(f"ok    {test.name}")
@@ -506,9 +550,10 @@ def bump(spec: str, root: Path = ROOT, today: str | None = None) -> None:
     if problems:
         print("fixing versions that disagreed:\n  " + "\n  ".join(problems))
     updates: dict[Path, str] = {}
-    for path, pattern in version_spots(release, root):
+    for path, pattern, fmt in version_spots(release, root):
         text = updates.get(path, path.read_text(encoding="utf-8"))
-        updates[path] = pattern.sub(lambda m: m.group(0)[:m.start(1) - m.start(0)] + spec
+        value = formatted(spec, fmt)
+        updates[path] = pattern.sub(lambda m: m.group(0)[:m.start(1) - m.start(0)] + value
                                     + m.group(0)[m.end(1) - m.start(0):], text, count=1)
         # "-- <Title> vX.Y.Z" header lines in main.lua follow along
         if path.name == "main.lua":
